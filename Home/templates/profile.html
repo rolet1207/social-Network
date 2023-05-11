@@ -1,0 +1,236 @@
+{% extends 'base.html' %} 
+
+{% block title %}
+  My profile
+{% endblock %}
+
+{% block content %}
+{%load static%}
+
+<style>
+
+	.mb-7 {
+		margin-bottom: 7px !important;
+	}
+	
+	.mt-5 {
+		margin-top: 5px !important;
+	}
+	
+	.mymodal {
+		height: 300px !important;
+		top: 200px !important;
+		font-size: 20px !important;
+	}
+	
+	.mb-5 {
+		margin-bottom: 5px !important;
+	}
+	
+	.w-big {
+		width: 200px !important;
+	}
+	
+	.bwhite-lg {
+		background-color: transparent !important;
+	}
+	
+	.bwhite-sm {
+		background-color: transparent !important;
+		width: 10px !important;
+	}
+	
+	.comment-box{
+	  display: none;
+	}
+	
+	
+</style>
+
+<nav class="head heading">Profile</nav>
+<div class="left-div-content">
+	<div class="post-view">
+		<div class="profile-view">
+			<img
+			class="cover-image"
+			src="{{user.profile.background_pic.url}}" style="width: 100%;"
+			alt="Background"></img>
+			
+			<img
+			class="profile-image"
+			src="{{user.profile.ava_pic.url}}"
+			alt="Avatar"></img>
+		
+			<div class="profile-details">
+				{% if user.profile %}
+					<div>
+						<a type="hidden" name="next" href="{% url 'edit_profile' user.profile.id %}">
+							<button
+								class="btn btn-outline-success float-right"
+								id="edit-profile-btn">
+								Edit Profile
+							</button>
+						</a>
+					</div>
+				{% endif %}
+				
+				<div class="details-data">
+					<h5>{{user.profile.get_fullname}}</h5>
+					<div class="grey" style="padding: 8px 0px">{{user.email}}</div>
+					
+				</div>
+				<strong>{{user.profile.get_posts_no}}</strong>&nbsp;<span class="grey">Posts</span>
+
+				<strong id="following__count">{{user.profile.get_friends_no}}</strong>&nbsp;<span class="grey">Friends</span>
+
+				<strong id="follower__count">{{user.profile.get_likes_received_no}}</strong>&nbsp;<span class="grey">Likes</span>
+
+				<br><br>
+				<div class="grey">
+					{{user.profile.bio|linebreaks}}
+				</div>
+			</div>
+		</div>
+		<div class="space"></div>
+		
+		<div class="ui grid">
+		  <div class="sixteen wide column">
+			  {% for obj in qs %}
+			  {% if request.user == obj.author.user %}
+			  <div class="ui fluid card">
+				  <div class="content">
+					  <div class="right floated meta">
+					  <div class="ui grid">
+						  <div class="row">
+							  
+								  <a href="{% url 'post_update' obj.pk %}"><button class="ui button bwhite-lg ">Update</button></a>
+								  <a href="{% url 'post_delete' obj.pk %}"><button class="ui button bwhite-lg ">Delete</button></a>
+							  
+						  </div>
+					  </div>
+						  
+					  </div>
+					  <img class="ui avatar image" src={{obj.author.ava_pic.url}}> 
+					  <strong>{{ obj.author.get_fullname }}</strong>
+					  <br>
+					  <i style="font-style: italic; margin-left: 3%">{{ obj.created|timesince}} ago</i>
+				  </div>
+				  <div class="ui fluid image">
+					  {% if obj.image %}
+						  <img src={{obj.image.url}}>
+					  {% endif %}
+				  </div>
+				  <div class="content">
+					  <p> {{ obj.content }} </p>
+					  <div class="right floated">
+						<form action="{% url 'like_post_view' %}" method="POST" class='like-form' id='{{obj.id}}'>
+							{% csrf_token %}
+							<input type="hidden" name="post_id" value={{obj.id}}>
+							
+								<button type="submit" class="ui button like-btn{{obj.id}}">
+									{% if profile not in obj.liked.all %}
+										Like
+									{% else %}
+										Unlike
+									{% endif %}
+								</button> 
+								<span class="like-count{{obj.id}}"> {{obj.num_likes}} </span>
+								<span>likes</span>
+								
+						</form>
+					  </div>
+					  <i class="comment icon"></i>
+					  <span> {{ obj.num_comments }} Comments</span>
+				  </div>
+				  <div class="extra content">
+					  <div class="mb-5">
+						
+					  </div>
+					  <button class="cmt_btn ui button mb-5" onclick="show_hide_comment()">Show / Hide comments</button>
+					  <div class="comment-box">
+					  {% if obj.comment_set.all %}
+						  {% for c in obj.comment_set.all %}
+						  
+							  <div class="ui segment mb-5">
+								  <img class="ui avatar image" src={{c.user.ava_pic.url}}>
+								  <span>{{ c.user.user.username }}</span>
+								  <div class='mt-5'><strong>{{ c.body }}</strong></div>
+							  </div>
+						  
+						  {% endfor %}
+					  {% endif %}
+					  </div>
+		
+					  <form action="" method="POST"class='ui fluid form'>
+						  {% csrf_token %}
+						  <input type="hidden" name="post_id" value={{obj.id}}>
+						  {{ comment_form }}
+						  <button type="submit" name="submit_comment_form" class="ui primary button mt-5 w-full">Send</button>
+					  </form>
+				  </div>
+			  </div>
+			  {% endif %}
+		
+		
+			  {% endfor %}
+		  </div>
+		</div>
+
+	</div>
+</div>
+
+<script>
+	$( document ).ready(function() {
+	  let display = false
+	  $(".cmt_btn").click(function () {
+		  if (display===false) {
+			  $(this).next(".comment-box").show("slow");
+			  display=true
+		  } else {
+			  $(this).next(".comment-box").hide("slow");
+			  display=false
+		  }  
+	  });
+	});
+  
+	$('.like-form').submit(function(e){
+				  e.preventDefault()
+				  
+				  const post_id = $(this).attr('id')
+				  
+				  const likeText = $(`.like-btn${post_id}`).text()
+				  const trim = $.trim(likeText)
+  
+				  const url = $(this).attr('action')
+				  
+				  let res;
+				  const likes = $(`.like-count${post_id}`).text()
+				  const trimCount = parseInt(likes)
+				  
+				  $.ajax({
+					  type: 'POST',
+					  url: url,
+					  data: {
+						  'csrfmiddlewaretoken': $('input[name=csrfmiddlewaretoken]').val(),
+						  'post_id':post_id,
+					  },
+					  success: function(response) {
+						  if(trim === 'Unlike') {
+							  $(`.like-btn${post_id}`).text('Like')
+							  res = trimCount - 1
+						  } else {
+							  $(`.like-btn${post_id}`).text('Unlike')
+							  res = trimCount + 1
+						  }
+  
+						  $(`.like-count${post_id}`).text(res)
+					  },
+					  error: function(response) {
+						  console.log('error', response)
+					  }
+				  })
+			  });
+  </script>
+  
+
+{% endblock %}

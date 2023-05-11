@@ -1,0 +1,87 @@
+{% load static %}
+  <div class="category__wrapper">
+    <ul class="category-bar">
+      <li class="category-item">
+        <a class="category--link" href="{% url 'home' %}">
+          <i class="fa-solid fa-house category__icon"></i>
+          <span class="category__text">Home</span>
+        </a>
+      </li>
+      <li class="category-item">
+        <a class="category--link" href="{% url 'my_invites' %}">
+          <i class="fa-solid fa-bell category__icon"></i>
+          <span class="category__text">My invites</span>
+        </a>
+      </li>
+      <li class="category-item">
+        <a class="category--link" href="{% url 'profile' %}">
+          <i class="fa-solid fa-user category__icon"></i>
+          <span class="category__text">Profile</span>
+        </a>
+      </li>
+      <li class="category-item">
+        <a class="category--link" href="{% url 'friends_profiles_views' %}">
+          <i class="fa-solid fa-people-group"></i>
+          <span class="category__text">Friends</span>
+        </a>
+      </li>
+
+      <div class="category-item"  onmouseover="mouseOverToggle()" onmouseleave="mouseOutToggle()">
+        <a class="category--link">
+          <i class="fa-solid fa-gear category__icon"></i>
+          <span class="category__text" data-toggle="bottom-left">Settings</span>
+          <div id='newDropDown' class="new dropdown" style="background-color: #ffff; 
+                width: 40%; 
+                height: 40%; 
+                margin-left: 4rem; 
+                font-size: 15px;
+                border-radius: 5px">
+            {% if user.username %}
+              <a class="dropdown-item" href="{% url 'logout' %}" >
+                Logout
+              </a>
+              <a class="dropdown-item" href="{% url 'change_password' %}">
+                Change password
+              </a>
+              <a class="dropdown-item" href="{% url 'edit_information' %}">
+                Edit your information
+              </a>
+            {% endif %}
+          </div>
+        </a>
+      </div>
+    </div>
+    </ul>
+
+    {% if user.username %}
+      <div class="infor">
+        <div class="infor__wrap">
+          {% if user.profile.ava_pic %}
+            <img src="{{user.profile.ava_pic.url}}" alt="Avatar_small" class="infor__avatar" />
+          {% else %}
+            <img src="{% static 'img/default_ava.png' %}" alt="Avatar_small" class="infor__avatar" />
+          {% endif %}
+          <div class="infor__block">
+            <h3 class="infor__stitle">{{user.profile.get_fullname}}</h3>
+            <span class="infor__desc">{{user.email}}</span>
+          </div>
+        </div>
+        <div class="infor__icon">
+          <i class="fa-solid fa-ellipsis"></i>
+        </div>
+      </div>
+    {% endif %}
+  
+
+  <!-- Sử lý nút Settings -->
+  <script>
+    var dropDownContent = document.getElementById('newDropDown');
+    dropDownContent.style.display = 'none';
+    function mouseOverToggle() {
+      dropDownContent.style.display = "";
+    }
+    function mouseOutToggle() {
+      dropDownContent.style.display = "none";
+    }
+  </script>
+

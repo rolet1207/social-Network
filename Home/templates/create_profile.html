@@ -1,0 +1,41 @@
+{% extends 'base.html' %} {% block content %}
+<nav class="head heading">Create profile</nav>
+  
+<div class="col-md-6 col-lg-7 d-flex align-items-center">
+    <div class="card-body p-4 p-lg-5 text-black">
+        <div class="form-group" onsubmit="ChangePassSuccessfully()">
+            <form method="POST" enctype="multipart/form-data" style="margin-left: 40%; width: 100%">
+                {% csrf_token %}
+                <div style="margin: 5%;">
+                    <label for="id_bio" style="font-size: 20px;">Bio:</label><br>
+                    {{ form.bio }}
+                </div>
+                <div style="margin: 5%;">
+                    <label for="id_ava_pic" style="font-size: 20px;">Ava pic:</label>
+                    <br>
+                    {{ form.ava_pic }}
+                </div>
+                <div style="margin: 5%;">
+                    <label for="id_background_pic" style="font-size: 20px;">Background pic:</label>
+                    <br>
+                    {{ form.background_pic }}
+                </div>
+            
+                <button
+                    class="btn btn-outline-success float-right"
+                    id="edit-profile-btn" style="margin-top: 2%; margin-right: 5%">
+                    Create profile
+				</button>
+            </form>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    function ChangePassSuccessfully() {
+          alert("Your profile was created !!!");
+    }
+    </script>
+
+
+{% endblock %}

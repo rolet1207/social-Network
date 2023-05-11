@@ -1,0 +1,57 @@
+{% extends 'base.html' %} {% block content %}
+<nav class="head heading">Edit information</nav>
+
+<div class="col-md-6 col-lg-7 d-flex align-items-center">
+    <div class="card-body p-4 p-lg-5 text-black">
+        <div class="form-group" onsubmit="ChangePassSuccessfully()">
+            <form method="POST" enctype="multipart/form-data" style="margin-left: 40%; width: 100%">
+                {% csrf_token %}
+                <div style="margin: 5%;">
+                    <label for="id_username" style="font-size: 20px;">Username:</label>
+                    {{ form.username }}
+                </div>
+
+                <div style="margin: 5%;">
+                    <label for="id_first_name" style="font-size: 20px;">First name:</label>                    
+                    {{ form.first_name }}
+                </div>
+                 
+                <div style="margin: 5%;">
+                    <label for="id_last_name" style="font-size: 20px;">Last name:</label>                    
+                    {{ form.last_name }}
+                </div>
+
+                <div style="margin: 5%;"> 
+                    <label for="id_email" style="font-size: 20px;">Email:</label>                    
+                    {{ form.email }}
+                </div>
+
+                <div style="margin: 5%;">
+                    <label for="last_login" style="font-size: 20px;">Last login:</label>                    
+                    {{ form.last_login }}
+                </div>
+
+                <div style="margin: 5%;">
+                    <label for="id_date_joined" style="font-size: 20px;">Date joined:</label>                    
+                    {{ form.date_joined }}
+                </div>
+            
+                <button
+                    class="btn btn-outline-success float-right"
+                    id="edit-profile-btn" style="margin-top: 2%; margin-right: 5%; width: 25%;">
+                    Update information
+				</button>
+            </form>
+        </div>
+    </div>
+  </div>
+
+  <script>
+    function ChangePassSuccessfully() {
+          alert("Your information was updated !!!");
+        
+    }
+    </script>
+
+{% endblock %}
+
